@@ -100,8 +100,9 @@ class _MyAppState extends State<LoginPage> {
                   final username = usernameController.text;
                   final password = passwordController.text;
 
+                  var user = await mydb.getUser(username);
 
-                  if (password == '123') {
+                  if (user != null && user['password'] == password) {
                     Navigator.pushNamed(context, '/listRecordsPage');
                     clearText();
                   } else if (username == "" || password == "") {

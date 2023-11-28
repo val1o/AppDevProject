@@ -97,25 +97,25 @@ class _RegisterPageState extends State<RegisterPage> {
                       backgroundColor: const Color.fromRGBO(193, 119, 103, 1)),
                   onPressed: () {
 
-                    // if (passwordController.text == confirmPasswordController.text){
-                    //   mydb.db.rawInsert(
-                    //       "insert into users (name, username, password) values (?, ?, ?);",
-                    //       [
-                    //         nameController.text,
-                    //         usernameController.text,
-                    //         passwordController.text
-                    //       ]);
-                    //   clearFields();
-                    //   ScaffoldMessenger.of(context).showSnackBar(
-                    //       SnackBar(content: Text('User added successfully.'))
-                    //   );
-                    // } else {
-                    //   ScaffoldMessenger.of(context).showSnackBar(
-                    //       SnackBar(content: Text('Passwords do not match.'))
-                    //   );
-                    // }
+                    if (passwordController.text == confirmPasswordController.text){
+                      mydb.db.rawInsert(
+                          "insert into users (name, username, password) values (?, ?, ?);",
+                          [
+                            nameController.text,
+                            usernameController.text,
+                            passwordController.text
+                          ]);
+                      clearFields();
+                      ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text('User added successfully.'))
+                      );
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text('Passwords do not match.'))
+                      );
+                    }
 
-                    Navigator.pop(context);
+                    //Navigator.pop(context);
                   },
                   child: const Text('Save'),
                 ),
