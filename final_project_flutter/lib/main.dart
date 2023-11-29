@@ -46,6 +46,9 @@ class GeneralRecordPage extends StatefulWidget {
 }
 
 class _GeneralRecordPageState extends State<GeneralRecordPage> {
+  List<Map> ClientInfo = [];
+  Mydb mydb = new Mydb();
+
   int activeIndex = 2;
 
   late List<Widget> pages;
@@ -59,6 +62,7 @@ class _GeneralRecordPageState extends State<GeneralRecordPage> {
     pages.add(OverviewPage());
     pages.add(MaterialsPage());
     pages.add(ToolsPage());
+    mydb.open();
   }
 
   @override
@@ -328,13 +332,14 @@ class _ListRecordsPageState extends State<ListRecordsPage> {
         ),
       ),
       floatingActionButton: recordsList.isNotEmpty
+
           ? FloatingActionButton(
-        onPressed: () {
-          Navigator.pushNamed(context, '/createRecordPage');
-        },
-        backgroundColor: const Color.fromRGBO(57, 210, 192, 1),
-        child: const Icon(Icons.add),
-      )
+              onPressed: () {
+              Navigator.pushNamed(context, '/createRecordPage');
+              },
+              backgroundColor: const Color.fromRGBO(57, 210, 192, 1),
+              child: const Icon(Icons.add),
+            )
           : null,
     );
   }

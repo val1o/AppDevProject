@@ -6,7 +6,7 @@ class Mydb{
 
   Future open() async {
     var databasePath = await getDatabasesPath();
-    String path = join(databasePath, 'records4.db');
+    String path = join(databasePath, 'records3.db');
     db = await openDatabase(path, version: 1,
         onCreate: (Database db, int version) async {
 
@@ -17,7 +17,7 @@ class Mydb{
             name varchar(50) not null,
             status int not null,
             date int,
-            client_id int not null,
+            client_id int null,
             FOREIGN KEY (client_id) REFERENCES clients (cid)
               ON DELETE NO ACTION ON UPDATE NO ACTION
             )            
@@ -29,7 +29,7 @@ class Mydb{
             first_name varchar(50) not null,
             last_name varchar(50) not null,
             address varchar(50) not null,
-            record_id int,
+            record_id int null,
             FOREIGN KEY (record_id) REFERENCES records (rid)
               ON DELETE CASCADE ON UPDATE NO ACTION
             )

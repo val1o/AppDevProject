@@ -109,13 +109,14 @@ class _RegisterPageState extends State<RegisterPage> {
                       ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(content: Text('User added successfully.'))
                       );
+                      Navigator.pop(context);
                     } else {
                       ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(content: Text('Passwords do not match.'))
                       );
                     }
 
-                    //Navigator.pop(context);
+
                   },
                   child: const Text('Save'),
                 ),
