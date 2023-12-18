@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:final_project_flutter/db.dart';
+import 'package:final_project_flutter/editProfilePage.dart';
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
@@ -16,11 +17,14 @@ class _RegisterPageState extends State<RegisterPage> {
 
   Mydb mydb = new Mydb();
 
+  List<Map> uList = [];
+
   @override
   void initState(){
     // TODO: implement initState
     super.initState();
     mydb.open();
+    getData();
   }
 
   void clearFields(){
@@ -29,6 +33,45 @@ class _RegisterPageState extends State<RegisterPage> {
     passwordController.clear();
     confirmPasswordController.clear();
   }
+
+  void getData(){
+    Future.delayed(Duration(milliseconds: 500), () async {
+      uList = await mydb.db.rawQuery('select * from users');
+      setState(() {
+
+      });
+    });
+  }
+
+  void addUser(){
+    if(nameController.text.isNotEmpty || usernameController.text.isNotEmpty || passwordController.text.isNotEmpty){
+      if (passwordController.text == confirmPasswordController.text){
+        mydb.db.rawInsert(
+            "insert into users (name, username, password) values (?, ?, ?);",
+            [
+              nameController.text,
+              usernameController.text,
+              passwordController.text
+            ]);
+        clearFields();
+        ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('User added successfully.'))
+        );
+        Navigator.pop(context);
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Passwords do not match.'))
+        );
+      }
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Please fill out all fields.'))
+      );
+    }
+
+
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -43,86 +86,88 @@ class _RegisterPageState extends State<RegisterPage> {
         ),
       ),
 
-      body: SingleChildScrollView(
+        body: SingleChildScrollView(
+          padding: EdgeInsets.all(20),
           child: Column(
             children: [
+
+              //User form
               Container(
-                margin: const EdgeInsets.fromLTRB(0, 25, 0, 0),
-                child: const CircleAvatar(
-                  radius: 50,
-                  backgroundImage: AssetImage('assets/6979509.png'),
-                  backgroundColor: Color.fromRGBO(154, 173, 191, 1),
+                margin: EdgeInsets.all(20),
+                child: Column(
+                  children: [
+                    TextField(
+                      controller: nameController,
+                      decoration: InputDecoration(hintText: 'Name'),
+                    ),
+                    TextField(
+                      controller: usernameController,
+                      decoration: InputDecoration(hintText: 'Username'),
+                    ),
+                    TextField(
+                      controller: passwordController,
+                      decoration: InputDecoration(hintText: 'Password'),
+                    ),
+                    TextField(
+                      controller: confirmPasswordController,
+                      decoration: InputDecoration(hintText: 'Confirm Password'),
+                    ),
+                    Container(
+                      margin: EdgeInsets.all(30),
+                      child: SizedBox(
+                        width: 200,
+                        child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(backgroundColor: Color.fromRGBO(193, 119, 103, 1)),
+                          onPressed: addUser,
+                          child: Text('Insert User'),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
-              Padding(
-                padding: EdgeInsets.fromLTRB(30, 50, 30, 0),
-                child: TextField(
-                  controller: nameController,
-                  decoration: const InputDecoration(
-                      border: OutlineInputBorder(), hintText: 'Name'),
-                ),
-              ),
-              Padding(
-                padding: EdgeInsets.fromLTRB(30, 30, 30, 0),
-                child: TextField(
-                  controller: usernameController,
-                  decoration: const InputDecoration(
-                      border: OutlineInputBorder(), hintText: 'Username'),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.fromLTRB(30, 30, 30, 0),
-                child: TextField(
-                  controller: passwordController,
-                  obscureText: true,
-                  decoration: const InputDecoration(
-                      border: OutlineInputBorder(), hintText: 'Password'),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.fromLTRB(30, 30, 30, 0),
-                child: TextField(
-                  controller: confirmPasswordController,
-                  obscureText: true,
-                  decoration: const InputDecoration(
-                      border: OutlineInputBorder(), hintText: 'Confirm Password'),
-                ),
-              ),
+
+              //List Users
               Container(
-                margin: const EdgeInsets.fromLTRB(0, 50, 0, 0),
-                height: 50,
-                width: 335,
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color.fromRGBO(193, 119, 103, 1)),
-                  onPressed: () {
-
-                    if (passwordController.text == confirmPasswordController.text){
-                      mydb.db.rawInsert(
-                          "insert into users (name, username, password) values (?, ?, ?);",
-                          [
-                            nameController.text,
-                            usernameController.text,
-                            passwordController.text
-                          ]);
-                      clearFields();
-                      ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text('User added successfully.'))
-                      );
-                      Navigator.pop(context);
-                    } else {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text('Passwords do not match.'))
-                      );
-                    }
-
-
-                  },
-                  child: const Text('Save'),
+                child: Column(
+                  children: uList.map((usrone) {
+                    return Card(
+                      child: ListTile(
+                        leading: Text(usrone["name"]),
+                        title: Text("Username: " + usrone["username"]),
+                        subtitle: Text("Password: " + usrone["password"]),
+                        trailing: Wrap(
+                          children: [
+                            IconButton(
+                              onPressed: () {
+                                Navigator.push(context, MaterialPageRoute(
+                                    builder: (BuildContext context) {
+                                      return EditPage(username: usrone["username"]);
+                                    }));
+                              },
+                              icon: Icon(Icons.key),
+                            ),
+                            IconButton(
+                              onPressed: () async {
+                                await mydb.db.rawDelete(
+                                    "delete from users where password = ?",
+                                    [usrone["password"]]);
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(content: Text('User deleted.')));
+                                getData();
+                              },
+                              icon: Icon(Icons.delete), color: Colors.red,)
+                          ],
+                        ),
+                      ),
+                    );
+                  }).toList(),
                 ),
-              ),
+              )
+
             ],
-          )),
+          ),
+        )
     );
   }
 }

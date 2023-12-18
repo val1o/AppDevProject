@@ -6,7 +6,7 @@ class Mydb{
 
   Future open() async {
     var databasePath = await getDatabasesPath();
-    String path = join(databasePath, 'records3.db');
+    String path = join(databasePath, 'records2.db');
     db = await openDatabase(path, version: 1,
         onCreate: (Database db, int version) async {
 
@@ -50,6 +50,16 @@ class Mydb{
   Future<Map<dynamic, dynamic>?> getRecord(int rollno) async {
     List<Map> maps =
     await db.query('records', where: 'roll_no = ?', whereArgs: [rollno]);
+    //Get record with appropriate id
+    if(maps.length > 0) {
+      return maps.first;
+    }
+    return null;
+  }
+
+  Future<Map<dynamic, dynamic>?> getClient(String address) async {
+    List<Map> maps =
+    await db.query('clients', where: 'address = ?', whereArgs: [address]);
     //Get record with appropriate id
     if(maps.length > 0) {
       return maps.first;

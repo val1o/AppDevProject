@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:final_project_flutter/db.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-
+import 'package:final_project_flutter/splashScreen.dart';
 import 'package:final_project_flutter/loginPage.dart';
 import 'package:final_project_flutter/registerPage.dart';
 import 'package:final_project_flutter/recordViewPages.dart';
@@ -20,12 +20,13 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: _title,
-      home: ScaffoldMessenger(
-        key: GlobalKey<ScaffoldMessengerState>(),
-        child: const Scaffold(
-          body: LoginPage(),
-        ),
-      ),
+      home: SplashScreen(),
+      // home: ScaffoldMessenger(
+      //   key: GlobalKey<ScaffoldMessengerState>(),
+      //   child: const Scaffold(
+      //     body: LoginPage(),
+      //   ),
+      // ),
       routes: {
         '/listRecordsPage': (context) => const ListRecordsPage(),
         '/createRecordPage': (context) => const CreateRecordPage(),
@@ -46,6 +47,12 @@ class GeneralRecordPage extends StatefulWidget {
 }
 
 class _GeneralRecordPageState extends State<GeneralRecordPage> {
+  TextEditingController clientController = TextEditingController();
+  TextEditingController machineController = TextEditingController();
+
+
+
+
   List<Map> ClientInfo = [];
   Mydb mydb = new Mydb();
 
@@ -152,8 +159,9 @@ class _CreateRecordPageState extends State<CreateRecordPage> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: const Text('Add Record'),
-          backgroundColor: const Color.fromRGBO(57, 210, 192, 1),
+          title: const Text('Add Record', style: TextStyle(color: Colors.black),),
+          backgroundColor: Colors.white,
+          iconTheme: IconThemeData(color: Colors.black),
         ),
         body: SingleChildScrollView(
           child: Column(

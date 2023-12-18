@@ -1,0 +1,29 @@
+{
+  "materials": [
+    {
+      "img": "",
+      "name": "Screws",
+      "quantity": "148"
+    },
+    {
+      "img": "",
+      "name": "Bolts",
+      "quantity": "78"
+    },
+    {
+      "img": "",
+      "name": "Planks",
+      "quantity": "2"
+    },
+    {
+      "img": "",
+      "name": "Wire",
+      "quantity": "25ft"
+    },
+    {
+      "img": "",
+      "name": "Other",
+      "quantity": ""
+    }
+  ]
+}

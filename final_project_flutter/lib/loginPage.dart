@@ -121,7 +121,7 @@ class _MyAppState extends State<LoginPage> {
                   },
                   style: TextButton.styleFrom(
                       foregroundColor: const Color.fromRGBO(57, 210, 192, 1)),
-                  child: const Text('Register')),
+                  child: const Text('Register / Forgot Password')),
             )
           ],
         ),
