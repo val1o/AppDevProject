@@ -4,23 +4,45 @@ import 'package:final_project_flutter/db.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'dart:convert';
 import 'package:flutter/services.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:video_player/video_player.dart';
 
 class MachinePage extends StatefulWidget {
-  const MachinePage({super.key});
+  const MachinePage({Key? key}) : super(key: key);
 
   @override
   State<MachinePage> createState() => _MachinePageState();
 }
 
 class _MachinePageState extends State<MachinePage> {
-  final urlImages = [
-    'https://www.hitachiaircon.com/id/storage/images/news/news_image_header_f98357527f5e46af57072438ef83fbac.jpg',
-    'https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fdygtyjqp7pi0m.cloudfront.net%2Fi%2F35870%2F32095169_1.jpg%3Fv%3D8D662B3DF42D130&f=1&nofb=1&ipt=82fc8c3c78ed44d0b3f4dba92f35dbfa80053c626c7bb4c9fec04f206ec052c9&ipo=images',
-    'https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fi.pinimg.com%2Foriginals%2F4f%2Ff4%2F91%2F4ff4917a1015c598414544207f7f80cc.jpg&f=1&nofb=1&ipt=06f08f8eee31523863abc8b3aa0bec42d2f98535b6a3f744b3313921b01b8831&ipo=images'
-  ];
+  List<String> machineImages = [];
 
   TextEditingController newImageController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    loadMachineImages();
+  }
+
+  Future<void> loadMachineImages() async {
+    try {
+      // Load the JSON file
+      String jsonData = await DefaultAssetBundle.of(context)
+          .loadString('assets/materials.json');
+
+      // Parse JSON data
+      Map<String, dynamic> data = json.decode(jsonData);
+
+      // Extract machineImages from the JSON
+      setState(() {
+        machineImages =
+        List<String>.from(data["machineImages"].map((image) => image["link"]));
+      });
+    } catch (e) {
+      print('Error loading machine images: $e');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -29,9 +51,9 @@ class _MachinePageState extends State<MachinePage> {
         children: [
           Center(
             child: CarouselSlider.builder(
-                itemCount: urlImages.length,
+                itemCount: machineImages.length,
                 itemBuilder: (context, index, realIndex) {
-                  final urlImage = urlImages[index];
+                  final urlImage = machineImages[index];
 
                   return buildImage(urlImage, index);
                 },
@@ -41,26 +63,23 @@ class _MachinePageState extends State<MachinePage> {
             padding: const EdgeInsets.all(24.0),
             child: TextField(
               controller: newImageController,
-              decoration: InputDecoration(
-                labelText: 'Enter Image Link'
-              ),
+              decoration: InputDecoration(labelText: 'Enter Image Link'),
             ),
           ),
           Padding(
             padding: const EdgeInsets.all(24.0),
             child: ElevatedButton(
-              style: ElevatedButton.styleFrom(backgroundColor: Color.fromRGBO(82, 72, 156, 1)),
-                onPressed: (){
-
+                style: ElevatedButton.styleFrom(
+                    backgroundColor: Color.fromRGBO(82, 72, 156, 1)),
+                onPressed: () {
                   String enteredText = newImageController.text;
 
-                  if(enteredText.isNotEmpty){
+                  if (enteredText.isNotEmpty) {
                     setState(() {
-                      urlImages.add(enteredText);
+                      machineImages.add(enteredText);
                       newImageController.clear();
                     });
                   }
-
                 },
                 child: Text('Add Image')),
           )
@@ -70,14 +89,18 @@ class _MachinePageState extends State<MachinePage> {
   }
 
   Widget buildImage(String urlImage, int index) => Container(
-        margin: EdgeInsets.symmetric(horizontal: 12),
-        color: Colors.grey,
-        child: Image.network(
-          urlImage,
-          fit: BoxFit.cover,
-        ),
-      );
+    margin: EdgeInsets.symmetric(horizontal: 12),
+    color: Colors.grey,
+    child: Image.network(
+      urlImage,
+      fit: BoxFit.cover,
+    ),
+  );
 }
+
+
+
+
 
 class ClientPage extends StatefulWidget {
   const ClientPage({super.key});
@@ -96,44 +119,42 @@ class _ClientPageState extends State<ClientPage> {
   List<Map> cList = [];
 
   @override
-  void initState(){
+  void initState() {
     super.initState();
     mydb.open();
     getData();
   }
 
-  void clearFields(){
+  void clearFields() {
     firstNameController.clear();
     lastNameController.clear();
     addressController.clear();
   }
 
-  void getData(){
+  void getData() {
     Future.delayed(Duration(milliseconds: 500), () async {
       cList = await mydb.db.rawQuery('select * from clients');
-      setState(() {
-
-      });
+      setState(() {});
     });
   }
 
-  void addClient(){
-    if(firstNameController.text.isNotEmpty || lastNameController.text.isNotEmpty || addressController.text.isNotEmpty){
+  void addClient() {
+    if (firstNameController.text.isNotEmpty ||
+        lastNameController.text.isNotEmpty ||
+        addressController.text.isNotEmpty) {
       mydb.db.rawInsert(
-        "insert into clients (first_name, last_name, address) values (?, ?, ?);",
-        [
-          firstNameController.text,
-          lastNameController.text,
-          addressController.text
-        ]);
+          "insert into clients (first_name, last_name, address) values (?, ?, ?);",
+          [
+            firstNameController.text,
+            lastNameController.text,
+            addressController.text
+          ]);
       clearFields();
-      ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Client added successfully.'))
-      );
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text('Client added successfully.')));
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Please fill out all fields.'))
-      );
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text('Please fill out all fields.')));
     }
   }
 
@@ -175,20 +196,21 @@ class _ClientPageState extends State<ClientPage> {
                     child: SizedBox(
                       width: 200,
                       child: ElevatedButton(
-                        style: ElevatedButton.styleFrom(backgroundColor: Color.fromRGBO(193, 119, 103, 1)),
+                        style: ElevatedButton.styleFrom(
+                            backgroundColor: Color.fromRGBO(193, 119, 103, 1)),
                         onPressed: addClient,
                         child: Text('Assign Client'),
                       ),
                     ),
                   ),
-
                   Container(
                     child: Column(
                       children: cList.map((clione) {
                         return Card(
                           child: ListTile(
                             leading: Icon(Icons.person),
-                            title: Text(clione["first_name"] + clione["last_name"]),
+                            title: Text(
+                                clione["first_name"] + clione["last_name"]),
                             subtitle: Text("Address: " + clione["address"]),
                             trailing: Wrap(
                               children: [
@@ -198,10 +220,13 @@ class _ClientPageState extends State<ClientPage> {
                                         "delete from clients where address = ?",
                                         [clione["address"]]);
                                     ScaffoldMessenger.of(context).showSnackBar(
-                                        SnackBar(content: Text('Client deleted.')));
+                                        SnackBar(
+                                            content: Text('Client deleted.')));
                                     getData();
                                   },
-                                  icon: Icon(Icons.delete), color: Colors.red,)
+                                  icon: Icon(Icons.delete),
+                                  color: Colors.red,
+                                )
                               ],
                             ),
                           ),
@@ -219,6 +244,8 @@ class _ClientPageState extends State<ClientPage> {
   }
 }
 
+
+
 class OverviewPage extends StatefulWidget {
   const OverviewPage({super.key});
 
@@ -227,13 +254,62 @@ class OverviewPage extends StatefulWidget {
 }
 
 class _OverviewPageState extends State<OverviewPage> {
+
+  String locationMessage = "Current User Location";
+  late String lat;
+  late String long;
+
+  Future<Position> _getCurrentLocation() async {
+    bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (!serviceEnabled) {
+      return Future.error('Location services are disabled');
+    }
+    LocationPermission permission = await Geolocator.checkPermission();
+    if(permission == LocationPermission.denied){
+      permission = await Geolocator.requestPermission();
+      if(permission == LocationPermission.denied){
+        return Future.error('Location permissions are denied');
+      }
+    }
+    if(permission == LocationPermission.deniedForever){
+      return Future.error(
+        'Location permissions are permanently denied'
+      );
+    }
+    return await Geolocator.getCurrentPosition();
+  }
+
+
+
+
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Text('Overview Page TODO'),
+    return Scaffold(
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            Text(locationMessage, textAlign: TextAlign.center,),
+            const SizedBox(height: 20),
+            ElevatedButton(
+                onPressed: () {
+                  _getCurrentLocation().then((value) {
+                    lat = '${value.latitude}';
+                    long = '${value.longitude}';
+                    setState(() {
+                      locationMessage = "Latitide: $lat, Longitude: $long";
+                    });
+                  });
+                },
+                child: const Text('Get Current Location')),
+            const SizedBox(height: 20,)
+          ],
+        ),
+      ),
     );
   }
 }
+
 
 
 
@@ -249,74 +325,94 @@ class MaterialsPage extends StatefulWidget {
 class _MaterialsPageState extends State<MaterialsPage> {
   List materialsList = [];
 
+  @override
+  void initState() {
+    super.initState();
+    readJson();
+  }
+
   Future<void> readJson() async {
-    final String response =
-        await rootBundle.loadString('assets/materials.json');
-    final data = await json.decode(response);
-    setState(() {
-      materialsList = data["materials"];
-    });
+    try {
+      final String response =
+          await rootBundle.loadString('assets/materials.json');
+      final data = await json.decode(response);
+      setState(() {
+        materialsList = data["materials"];
+      });
+    } catch (e) {
+      print('Error reading JSON file: $e');
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    return GridView.builder(
-      padding: EdgeInsets.all(20),
-      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 2,
-        crossAxisSpacing: 10,
-        mainAxisSpacing: 10,
-      ),
-      itemCount: materialsList.length + 1, // Add 1 for the button
-      itemBuilder: (context, index) {
-        if (index < materialsList.length) {
-          // Display material item
-          return Container(
-            padding: EdgeInsets.all(8),
-            color: Colors.teal[(index + 1) * 100],
-            child: Column(
-              children: [
-                Container(
-                  height: 75,
-                  decoration: BoxDecoration(
-                    border: Border.all(color: Colors.black),
-                  ),
-                ),
-                Container(
-                  height: 45,
-                  decoration: BoxDecoration(
-                    border: Border.all(color: Colors.black),
-                  ),
-                  child: Text(materialsList[index]),
-                ),
-                Container(
-                  height: 25,
-                  decoration: BoxDecoration(
-                    border: Border.all(color: Colors.black),
-                  ),
-                  child: Text('Quantity: '),
-                ),
-              ],
-            ),
-            //child: Text(materialsList[index]),
-          );
-        } else {
-          // Display button
-          return Container(
-            padding: EdgeInsets.all(48),
-            color: Colors.teal[600],
-            child: ElevatedButton(
-              onPressed: () {
-                // Add a new material item when the button is pressed
-                setState(() {
-                  materialsList.add('New Material');
-                });
+    return Scaffold(
+      body: materialsList.isEmpty
+          ? Center(
+              child: CircularProgressIndicator(),
+            )
+          : GridView.builder(
+              padding: EdgeInsets.all(20),
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2,
+                crossAxisSpacing: 10,
+                mainAxisSpacing: 10,
+              ),
+              itemCount: materialsList.length + 1, // Add 1 for the button
+              itemBuilder: (context, index) {
+                if (index < materialsList.length) {
+                  var material = materialsList[index];
+                  return Container(
+                    padding: EdgeInsets.all(8),
+                    color: Colors.teal[(index + 1) * 100],
+                    child: Column(
+                      children: [
+                        Container(
+                            height: 75,
+                            decoration: BoxDecoration(
+                              border: Border.all(color: Colors.black),
+                            ),
+                            child: material["img"] != null
+                                ? Image.network(
+                                    material["img"],
+                                    fit: BoxFit.cover,
+                                  )
+                                : Image.asset(
+                                    'assets/default.png',
+                                    fit: BoxFit.cover,
+                                  )
+                            // Display image here if available (use material["img"])
+                            ),
+                        Container(
+                          height: 45,
+                          child: Text(material["name"]),
+                        ),
+                        Container(
+                          height: 25,
+                          child: Text('Quantity: ${material["quantity"]}'),
+                        ),
+                      ],
+                    ),
+                  );
+                } else {
+                  // Display button
+                  return Container(
+                    padding: EdgeInsets.all(48),
+                    color: Colors.teal[600],
+                    child: ElevatedButton(
+                      onPressed: () {
+                        // Add a new material item when the button is pressed
+                        setState(() {
+                          materialsList
+                              .add({'name': 'New Material', 'quantity': ''});
+                        });
+                      },
+                      child: Text('+'),
+                    ),
+                  );
+                }
               },
-              child: Text('+'),
             ),
-          );
-        }
-      },
     );
   }
 }
@@ -324,15 +420,14 @@ class _MaterialsPageState extends State<MaterialsPage> {
 class ToolsPage extends StatefulWidget {
   const ToolsPage({super.key});
 
-
-
   @override
   State<ToolsPage> createState() => _ToolsPageState();
 }
 
 class _ToolsPageState extends State<ToolsPage> {
-
-  final FlickManager flickManager = FlickManager(videoPlayerController: VideoPlayerController.network('https://flutter.github.io/assets-for-api-docs/assets/videos/bee.mp4',
+  final FlickManager flickManager = FlickManager(
+    videoPlayerController: VideoPlayerController.network(
+      'https://flutter.github.io/assets-for-api-docs/assets/videos/bee.mp4',
     ),
   );
 
@@ -340,11 +435,11 @@ class _ToolsPageState extends State<ToolsPage> {
   Widget build(BuildContext context) {
     return Center(
       child: AspectRatio(
-        aspectRatio: 16/9,
-        child: FlickVideoPlayer(flickManager: flickManager,),
+        aspectRatio: 16 / 9,
+        child: FlickVideoPlayer(
+          flickManager: flickManager,
+        ),
       ),
     );
   }
-
-
 }

@@ -1,29 +1,39 @@
 {
   "materials": [
     {
-      "img": "",
       "name": "Screws",
-      "quantity": "148"
+      "quantity": "148",
+      "img": "https://media.kitply.ca/images/jpg/large/scr/scw/screws-screws.jpg"
     },
     {
-      "img": "",
       "name": "Bolts",
-      "quantity": "78"
+      "quantity": "78",
+      "img": "https://ae01.alicdn.com/kf/HTB1PvD9mnnI8KJjSszgq6A8ApXaH/M5-Stainless-Steel-Machine-Screws-Slotted-Pan-Head-Bolts-M5-25mm-50pcs.jpg"
     },
     {
-      "img": "",
       "name": "Planks",
-      "quantity": "2"
+      "quantity": "2",
+      "img": "https://esupplier.pk/wp-content/uploads/2020/10/woodplanks.jpg"
     },
     {
-      "img": "",
       "name": "Wire",
-      "quantity": "25ft"
+      "quantity": "25ft",
+      "img": "https://www.filam.com.ph/sites/default/files/GI%20WIRE%20%2316%2027.5KLS:RL%20(K:RL27.5)_2.jpg"
+    }
+  ],
+
+  "machineImages": [
+    {
+      "name": "Img 1",
+      "link": "https://www.hitachiaircon.com/id/storage/images/news/news_image_header_f98357527f5e46af57072438ef83fbac.jpg"
     },
     {
-      "img": "",
-      "name": "Other",
-      "quantity": ""
+      "name": "Img 2",
+      "link": "https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fdygtyjqp7pi0m.cloudfront.net%2Fi%2F35870%2F32095169_1.jpg%3Fv%3D8D662B3DF42D130&f=1&nofb=1&ipt=82fc8c3c78ed44d0b3f4dba92f35dbfa80053c626c7bb4c9fec04f206ec052c9&ipo=images"
+    },
+    {
+      "name": "Img 3",
+      "link": "https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fi.pinimg.com%2Foriginals%2F4f%2Ff4%2F91%2F4ff4917a1015c598414544207f7f80cc.jpg&f=1&nofb=1&ipt=06f08f8eee31523863abc8b3aa0bec42d2f98535b6a3f744b3313921b01b8831&ipo=images"
     }
   ]
 }

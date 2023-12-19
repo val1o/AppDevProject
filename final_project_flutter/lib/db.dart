@@ -6,17 +6,16 @@ class Mydb{
 
   Future open() async {
     var databasePath = await getDatabasesPath();
-    String path = join(databasePath, 'records2.db');
+    String path = join(databasePath, 'records4.db');
     db = await openDatabase(path, version: 1,
         onCreate: (Database db, int version) async {
 
           await db.execute('''
             create table if not exists records (
             rid INTEGER PRIMARY KEY autoincrement,
-            roll_no int not null,
             name varchar(50) not null,
             status int not null,
-            date int,
+            date INTEGER,
             client_id int null,
             FOREIGN KEY (client_id) REFERENCES clients (cid)
               ON DELETE NO ACTION ON UPDATE NO ACTION
@@ -47,9 +46,9 @@ class Mydb{
     );
   }
 
-  Future<Map<dynamic, dynamic>?> getRecord(int rollno) async {
+  Future<Map<dynamic, dynamic>?> getRecord(String name) async {
     List<Map> maps =
-    await db.query('records', where: 'roll_no = ?', whereArgs: [rollno]);
+    await db.query('records', where: 'name = ?', whereArgs: [name]);
     //Get record with appropriate id
     if(maps.length > 0) {
       return maps.first;

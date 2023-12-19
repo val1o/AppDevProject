@@ -21,7 +21,6 @@ class _RegisterPageState extends State<RegisterPage> {
 
   @override
   void initState(){
-    // TODO: implement initState
     super.initState();
     mydb.open();
     getData();
@@ -93,7 +92,7 @@ class _RegisterPageState extends State<RegisterPage> {
 
               //User form
               Container(
-                margin: EdgeInsets.all(20),
+                margin: EdgeInsets.all(30),
                 child: Column(
                   children: [
                     TextField(

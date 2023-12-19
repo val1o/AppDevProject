@@ -140,17 +140,13 @@ class CreateRecordPage extends StatefulWidget {
 }
 
 class _CreateRecordPageState extends State<CreateRecordPage> {
-  TextEditingController rollno = TextEditingController();
   TextEditingController recordName = TextEditingController();
   TextEditingController status = TextEditingController();
-
-  //TextEditingController date = TextEditingController();
 
   Mydb mydb = new Mydb();
 
   @override
   void initState() {
-    // TODO: implement iniState
     super.initState();
     mydb.open();
   }
@@ -164,56 +160,40 @@ class _CreateRecordPageState extends State<CreateRecordPage> {
           iconTheme: IconThemeData(color: Colors.black),
         ),
         body: SingleChildScrollView(
+          padding: EdgeInsets.all(20),
           child: Column(
             children: [
-              Padding(
-                padding: const EdgeInsets.fromLTRB(30, 60, 30, 30),
-                child: TextField(
-                  controller: recordName,
-                  decoration: const InputDecoration(
-                      border: OutlineInputBorder(),
-                      hintText: 'Record Name',
-                      filled: true,
-                      fillColor: Colors.white),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.fromLTRB(30, 20, 30, 30),
-                child: TextField(
-                  controller: status,
-                  decoration: const InputDecoration(
-                      border: OutlineInputBorder(),
-                      hintText: 'Record Status',
-                      filled: true,
-                      fillColor: Colors.white),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.fromLTRB(30, 20, 30, 30),
-                child: TextField(
-                  controller: rollno,
-                  decoration: const InputDecoration(
-                      border: OutlineInputBorder(),
-                      hintText: 'Record Number',
-                      filled: true,
-                      fillColor: Colors.white),
+              Container(
+                margin: EdgeInsets.all(30),
+                child: Column(
+                  children: [
+                    TextField(
+                      controller: recordName,
+                      decoration: InputDecoration(hintText: 'Record Name'),
+                    ),
+                    TextField(
+                      controller: status,
+                      decoration: InputDecoration(hintText: 'Record Status'),
+                    )
+                  ],
                 ),
               ),
               Container(
-                margin: const EdgeInsets.fromLTRB(30, 10, 30, 0),
-                width: double.infinity,
-                height: 50,
+                width: 200,
                 child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
                         backgroundColor:
                         const Color.fromRGBO(193, 119, 103, 1)),
-                    onPressed: () {
+                    onPressed: () async {
+
+                      int currentTime = DateTime.now().microsecondsSinceEpoch;
+
                       mydb.db.rawInsert(
-                          "insert into records (roll_no, name, status) values (?, ?, ?);",
+                          "insert into records (name, status, date) values (?, ?, ?);",
                           [
-                            rollno.text,
                             recordName.text,
                             status.text,
+                            currentTime
                           ]);
                       recordName.clear();
                       Navigator.pop(context);
@@ -242,7 +222,6 @@ class _ListRecordsPageState extends State<ListRecordsPage> {
 
   @override
   void initState() {
-    // TODO: implement initState
     mydb.open();
     getData();
     super.initState();
@@ -291,6 +270,11 @@ class _ListRecordsPageState extends State<ListRecordsPage> {
               ))
               : Column(
             children: recordsList.map((recordOne) {
+              
+              int timestamp = recordOne['date'];
+              DateTime dateTime = DateTime.fromMicrosecondsSinceEpoch(timestamp);
+              String formattedDate = "${dateTime.day}/${dateTime.month}/${dateTime.year} ${dateTime.hour}:${dateTime.minute}";
+
               return Card(
                   child: ListTile(
                     leading: const FaIcon(FontAwesomeIcons.folder),
@@ -304,20 +288,11 @@ class _ListRecordsPageState extends State<ListRecordsPage> {
                         ", Name: " +
                         recordOne["name"] +
                         ", Date: " +
-                        recordOne["date"].toString() +
+                        formattedDate +
                         ", Status: " +
                         recordOne["status"].toString()),
                     trailing: Wrap(
                       children: [
-                        IconButton(
-                            onPressed: () {
-                              Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => EditRecordPage(
-                                          rid: recordOne["rid"])));
-                            },
-                            icon: const Icon(Icons.edit)),
                         IconButton(
                             onPressed: () async {
                               await mydb.db.rawDelete(

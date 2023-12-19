@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:final_project_flutter/db.dart';
+import 'package:final_project_flutter/main.dart';
+import 'package:final_project_flutter/localNotifications.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
@@ -16,15 +18,16 @@ class _MyAppState extends State<LoginPage> {
 
   @override
   void initState() {
-    //TODO: implement initState
     super.initState();
     mydb.open();
+    LocalNotificationService.initialize();
   }
 
   void showLoginFailedSnackBar() {
     ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
         content: Text('Login failed, please verify information.')));
   }
+
 
   void showEmptyInfoSnackBar() {
     ScaffoldMessenger.of(context).showSnackBar(
