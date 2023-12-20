@@ -1,7 +1,9 @@
+import 'package:final_project_flutter/notificationsApi.dart';
 import 'package:flutter/material.dart';
 import 'package:final_project_flutter/db.dart';
 import 'package:final_project_flutter/main.dart';
-import 'package:final_project_flutter/localNotifications.dart';
+import 'package:final_project_flutter/notificationsApi.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
@@ -20,7 +22,6 @@ class _MyAppState extends State<LoginPage> {
   void initState() {
     super.initState();
     mydb.open();
-    LocalNotificationService.initialize();
   }
 
   void showLoginFailedSnackBar() {
@@ -108,6 +109,8 @@ class _MyAppState extends State<LoginPage> {
                   if (user != null && user['password'] == password) {
                     Navigator.pushNamed(context, '/listRecordsPage');
                     clearText();
+
+
                   } else if (username == "" || password == "") {
                     showEmptyInfoSnackBar();
                   } else {

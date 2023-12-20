@@ -5,7 +5,10 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'dart:convert';
 import 'package:flutter/services.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:url_launcher/url_launcher_string.dart';
 import 'package:video_player/video_player.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'package:url_launcher/link.dart';
 
 class MachinePage extends StatefulWidget {
   const MachinePage({Key? key}) : super(key: key);
@@ -70,6 +73,7 @@ class _MachinePageState extends State<MachinePage> {
             padding: const EdgeInsets.all(24.0),
             child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
+                    foregroundColor: Colors.white,
                     backgroundColor: Color.fromRGBO(82, 72, 156, 1)),
                 onPressed: () {
                   String enteredText = newImageController.text;
@@ -197,6 +201,7 @@ class _ClientPageState extends State<ClientPage> {
                       width: 200,
                       child: ElevatedButton(
                         style: ElevatedButton.styleFrom(
+                          foregroundColor: Colors.white,
                             backgroundColor: Color.fromRGBO(193, 119, 103, 1)),
                         onPressed: addClient,
                         child: Text('Assign Client'),
@@ -279,7 +284,30 @@ class _OverviewPageState extends State<OverviewPage> {
     return await Geolocator.getCurrentPosition();
   }
 
+  void _liveLocation() {
+    LocationSettings locationSettings = const LocationSettings(
+      accuracy: LocationAccuracy.high,
+      distanceFilter: 100,
+    );
 
+    Geolocator.getPositionStream(locationSettings: locationSettings)
+      .listen((Position position) {
+        lat = position.latitude.toString();
+        long = position.longitude.toString();
+
+        setState(() {
+          locationMessage = 'Latitude: $lat, Longitude: $long';
+        });
+    });
+  }
+
+  Future<void> _openMap(String lat, String long) async {
+    String googleURL =
+        'https://www.google.com/maps/search/?api=1&query=$lat,$long';
+    await canLaunchUrlString(googleURL)
+      ? await launchUrlString(googleURL)
+        : throw 'Could not launch $googleURL';
+  }
 
 
   @override
@@ -299,10 +327,17 @@ class _OverviewPageState extends State<OverviewPage> {
                     setState(() {
                       locationMessage = "Latitide: $lat, Longitude: $long";
                     });
+                    _liveLocation();
                   });
                 },
                 child: const Text('Get Current Location')),
-            const SizedBox(height: 20,)
+            const SizedBox(height: 20,),
+            ElevatedButton(
+                onPressed: (){
+                  _openMap(lat, long);
+
+                },
+                child: const Text('Open Google Map'))
           ],
         ),
       ),
